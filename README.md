@@ -10,12 +10,11 @@ git clone https://github.com/DestineG/mcp_create.git
 cd mcp_create
 
 # 2. 一键安装所有 MCP（自动运行测试）
-chmod +x install-all.sh
+chmod +x install-all.sh configure-claude-cli.sh
 ./install-all.sh
 
 # 3. 配置到 Claude CLI
-claude mcp add scholar mcp-scholar
-claude mcp add time mcp-time
+./configure-claude-cli.sh
 
 # 4. 验证
 claude mcp list

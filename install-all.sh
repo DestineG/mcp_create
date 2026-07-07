@@ -49,7 +49,7 @@ for dir in "$SCRIPT_DIR"/*/; do
         if [ "$RUN_TESTS" = "true" ] && [ -d "$dir/tests" ]; then
             echo -e "${BLUE}  🧪 运行测试...${NC}"
             cd "$dir"
-            if uv run pytest -q 2>&1 | grep -q "passed\|PASSED"; then
+            if uv run pytest -q 2>&1; then
                 echo -e "${GREEN}  ✅ 测试通过${NC}"
             else
                 echo -e "${RED}  ❌ 测试失败${NC}"

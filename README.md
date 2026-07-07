@@ -21,12 +21,102 @@ uv tool list
 
 ## 📦 包含的 MCP 服务器
 
-| 项目 | 描述 | 工具数 |
-|------|------|--------|
-| **mcp-scholar** | 学术论文搜索（OpenAlex + Semantic Scholar） | 3 |
-| **mcp-time** | 时区和时间工具 | 3 |
+| 项目 | 描述 | 工具数 | 文档 |
+|------|------|--------|------|
+| **mcp-scholar** | 学术论文搜索（OpenAlex + Semantic Scholar） | 3 | [详细说明](#mcp-scholar-使用) |
+| **mcp-time** | 时区和时间工具 | 3 | [详细说明](#mcp-time-使用) |
 
-详细文档见各项目的 README。
+### mcp-scholar 使用
+
+提供 3 个工具：
+
+**1. search_papers** - 搜索论文
+```
+参数：
+  - query: 搜索关键词（必需）
+  - source: 数据源 (openalex/semantic_scholar)，默认 openalex
+  - max_results: 最大结果数，默认 10
+  - year_from: 起始年份
+  - year_to: 结束年份
+  - sort: 排序方式 (relevance/cited_by_count/publication_date)
+
+示例：
+  "搜索关于深度学习的论文"
+  "查找 2020 年后关于强化学习的论文，按引用数排序"
+```
+
+**2. get_paper_details** - 获取论文详情
+```
+参数：
+  - paper_id: 论文 ID 或 DOI（必需）
+  - source: 数据源，默认 openalex
+
+示例：
+  "获取这篇论文的详细信息: 10.1038/nature14539"
+```
+
+**3. get_paper_citations** - 获取引用文献
+```
+参数：
+  - paper_id: 论文 ID 或 DOI（必需）
+  - source: 数据源，默认 openalex
+  - max_results: 最大结果数，默认 50
+
+示例：
+  "查看引用 Attention Is All You Need 的文献"
+```
+
+### mcp-time 使用
+
+提供 3 个工具：
+
+**1. get_current_time** - 获取当前时间
+```
+参数：
+  - timezone: 时区名称（如 'Asia/Shanghai'），默认 UTC
+  - format: 格式 (iso/unix/human)，默认 iso
+
+示例：
+  "现在北京时间几点？"
+  "东京现在几点？"
+```
+
+**2. convert_timezone** - 时区转换
+```
+参数：
+  - time: ISO 格式时间（必需）
+  - from_timezone: 源时区，默认 UTC
+  - to_timezone: 目标时区（必需）
+
+示例：
+  "把纽约时间 2024-01-01 12:00 转换成上海时间"
+```
+
+**3. list_timezones** - 列出时区
+```
+参数：
+  - region: 按区域筛选（如 'Asia', 'America'）
+
+示例：
+  "列出所有亚洲的时区"
+```
+
+## 💡 使用提示
+
+**MCP 服务器不是传统 CLI 工具**：
+- ❌ 不支持 `mcp-scholar --help`
+- ❌ 不能直接在终端运行
+- ✅ 通过 Claude CLI 自动调用
+- ✅ 只需用自然语言描述需求
+
+**示例对话**：
+```
+你: "搜索关于机器学习的论文"
+Claude: [自动调用 search_papers 工具]
+
+你: "现在纽约几点？"
+Claude: [自动调用 get_current_time 工具]
+```
 
 ## 🛠️ 开发工作流
 

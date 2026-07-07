@@ -91,9 +91,19 @@ cd mcp_create
 git pull && ./install-all.sh
 ```
 
-## 🔧 配置 Claude Desktop
+## 🔧 配置 Claude
 
-### 方法 1: 自动配置（推荐）
+### Claude CLI（推荐）
+
+```bash
+# 一键配置所有已安装的 MCP 到 Claude CLI
+chmod +x configure-claude-cli.sh
+./configure-claude-cli.sh
+```
+
+配置会立即生效，无需重启！
+
+### Claude Desktop
 
 ```bash
 # 一键配置所有已安装的 MCP 到 Claude Desktop
@@ -101,31 +111,22 @@ chmod +x configure-claude.sh
 ./configure-claude.sh
 ```
 
-脚本会：
-- ✅ 自动检测操作系统和配置文件路径
-- ✅ 扫描所有已安装的 MCP 服务器
-- ✅ 备份现有配置
-- ✅ 自动生成并写入配置
-- ✅ 不覆盖已有的自定义配置
+需要重启 Claude Desktop 使配置生效。
 
-### 方法 2: 手动配置
+### 手动配置
 
-编辑配置文件：
-
-**配置文件位置**:
+**Claude CLI**: 编辑 `~/.claude/settings.json`  
+**Claude Desktop**: 
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
 
-**添加配置**:
+添加配置：
 ```json
 {
   "mcpServers": {
     "scholar": {
-      "command": "mcp-scholar",
-      "env": {
-        "OPENALEX_EMAIL": "your@email.com"
-      }
+      "command": "mcp-scholar"
     },
     "time": {
       "command": "mcp-time"
@@ -134,22 +135,20 @@ chmod +x configure-claude.sh
 }
 ```
 
-### 完成
-
-重启 Claude Desktop 即可使用。
-
 ## 📁 项目结构
 
 ```
 mcp_create/
-├── README.md              # 本文件
-├── install-all.sh         # 一键安装脚本
+├── README.md                 # 本文件
+├── install-all.sh            # 批量安装脚本
+├── configure-claude-cli.sh   # 配置 Claude CLI
+├── configure-claude.sh       # 配置 Claude Desktop
 ├── .gitignore
-├── mcp-scholar/           # 学术论文搜索
+├── mcp-scholar/              # 学术论文搜索
 │   ├── src/mcp_scholar/
 │   ├── pyproject.toml
 │   └── README.md
-└── mcp-time/              # 时区工具
+└── mcp-time/                 # 时区工具
     ├── src/mcp_time/
     ├── pyproject.toml
     └── README.md

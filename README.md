@@ -14,11 +14,10 @@ chmod +x install-all.sh
 ./install-all.sh
 
 # 3. 配置到 Claude CLI
-chmod +x configure-claude-cli.sh
-./configure-claude-cli.sh
+claude mcp add scholar mcp-scholar
+claude mcp add time mcp-time
 
 # 4. 验证
-uv tool list
 claude mcp list
 ```
 
@@ -191,16 +190,33 @@ git pull && ./install-all.sh
 
 ## 🔧 配置 Claude CLI
 
+### 方法 1: 一键配置（推荐）
+
 ```bash
-# 一键配置所有已安装的 MCP 到 Claude CLI
 chmod +x configure-claude-cli.sh
 ./configure-claude-cli.sh
 ```
 
-配置会立即生效，无需重启！脚本会：
-- 自动检测通过 `uv tool list` 安装的所有 MCP
-- 使用 `claude mcp add` 命令配置每个 MCP
-- 验证连接状态（显示 ✓ Connected）
+### 方法 2: 手动配置
+
+```bash
+# 添加 mcp-scholar
+claude mcp add scholar mcp-scholar
+
+# 添加 mcp-time
+claude mcp add time mcp-time
+
+# 验证配置
+claude mcp list
+```
+
+输出示例：
+```
+scholar: mcp-scholar  - ✓ Connected
+time: mcp-time  - ✓ Connected
+```
+
+配置会立即生效，无需重启！
 
 ## 📁 项目结构
 
@@ -209,7 +225,7 @@ mcp_create/
 ├── README.md                      # 本文件
 ├── MCP_DEVELOPMENT_GUIDE.md       # 开发规范和模板
 ├── install-all.sh                 # 批量安装脚本（自动测试）
-├── configure-claude-cli.sh        # 自动配置 Claude CLI
+├── configure-claude-cli.sh        # 自动配置 Claude CLI（可选）
 ├── .gitignore
 ├── mcp-scholar/                   # 学术论文搜索
 │   ├── src/mcp_scholar/

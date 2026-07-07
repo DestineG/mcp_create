@@ -169,7 +169,7 @@ cd mcp-scholar
 # ... 修改 ...
 
 # 2. 运行测试
-uv run pytest -v
+uv run --extra dev pytest -v
 
 # 3. 重新安装
 cd ..
@@ -439,7 +439,7 @@ A: 可以。`uv tool install ./mcp-scholar`
 A: `RUN_TESTS=false ./install-all.sh`（不推荐，可能安装有问题的代码）
 
 **Q: 如何单独运行某个项目的测试？**  
-A: `cd mcp-scholar && uv run pytest -v`
+A: `cd mcp-scholar && uv run --extra dev pytest -v`
 
 **Q: 如何卸载？**  
 A: 单个卸载：`uv tool uninstall mcp-scholar`  

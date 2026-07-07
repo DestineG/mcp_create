@@ -49,7 +49,7 @@ for dir in "$SCRIPT_DIR"/*/; do
         if [ "$RUN_TESTS" = "true" ] && [ -d "$dir/tests" ]; then
             echo -e "${BLUE}  🧪 运行测试...${NC}"
             cd "$dir"
-            if uv run pytest -q 2>&1; then
+            if uv run --extra dev pytest -q 2>&1; then
                 echo -e "${GREEN}  ✅ 测试通过${NC}"
             else
                 echo -e "${RED}  ❌ 测试失败${NC}"
@@ -96,5 +96,5 @@ uv tool list | grep -E "^[a-z]" || echo "无"
 echo ""
 echo -e "${BLUE}💡 提示：${NC}"
 echo "  • 跳过测试: RUN_TESTS=false ./install-all.sh"
-echo "  • 只运行测试: cd mcp-xxx && uv run pytest -v"
+echo "  • 只运行测试: cd mcp-xxx && uv run --extra dev pytest -v"
 

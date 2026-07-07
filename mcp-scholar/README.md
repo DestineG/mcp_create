@@ -90,10 +90,10 @@ export SEMANTIC_SCHOLAR_API_KEY="optional-api-key"
 
 ```bash
 # 运行所有测试
-uv run pytest -v
+uv run --extra dev pytest -v
 
 # 运行特定测试
-uv run pytest tests/test_api.py::TestOpenAlexAPI::test_search_basic -v
+uv run --extra dev pytest tests/test_api.py::TestOpenAlexAPI::test_search_basic -v
 ```
 
 ### 测试覆盖

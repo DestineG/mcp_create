@@ -83,10 +83,10 @@ claude mcp add time mcp-time
 
 ```bash
 # 运行所有测试
-uv run pytest -v
+uv run --extra dev pytest -v
 
 # 运行特定测试
-uv run pytest tests/test_time.py::TestTimeTools::test_convert_timezone -v
+uv run --extra dev pytest tests/test_time.py::TestTimeTools::test_convert_timezone -v
 ```
 
 ### 测试覆盖

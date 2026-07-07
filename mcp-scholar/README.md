@@ -9,42 +9,21 @@
 - 📚 **引用分析**: 查看引用某篇论文的其他文献
 - 📖 **BibTeX 导出**: 自动生成标准的 BibTeX 引用格式
 - 🌐 **双数据源**: OpenAlex (无需 API key) 和 Semantic Scholar (可选 API key)
+- ✅ **完整测试**: 包含 9 个单元测试，覆盖所有功能
 
 ## 安装
 
-### 使用 uv (推荐)
-
 ```bash
 cd mcp-scholar
-uv sync
-```
-
-### 使用 pip
-
-```bash
-cd mcp-scholar
-pip install -e .
+uv tool install .
 ```
 
 ## 配置
 
-### Claude Desktop
+### Claude CLI (推荐)
 
-在 Claude Desktop 配置文件中添加以下内容 (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
-
-```json
-{
-  "mcpServers": {
-    "scholar": {
-      "command": "uv",
-      "args": ["--directory", "/path/to/mcp-scholar", "run", "mcp-scholar"],
-      "env": {
-        "OPENALEX_EMAIL": "your@email.com",
-        "SEMANTIC_SCHOLAR_API_KEY": "optional-api-key"
-      }
-    }
-  }
-}
+```bash
+claude mcp add scholar mcp-scholar
 ```
 
 ### 环境变量
@@ -52,25 +31,20 @@ pip install -e .
 - `OPENALEX_EMAIL`: (可选) 提供邮箱可获得更高的 API 限额
 - `SEMANTIC_SCHOLAR_API_KEY`: (可选) Semantic Scholar API key
 
+配置环境变量：
+```bash
+export OPENALEX_EMAIL="your@email.com"
+export SEMANTIC_SCHOLAR_API_KEY="optional-api-key"
+```
+
 ## 使用示例
 
-### 搜索论文
+在 Claude CLI 中使用自然语言：
 
-```python
-# 在 Claude Desktop 中使用
+```
 "搜索关于 transformer 的论文"
 "查找 2020 年后关于强化学习的论文，按引用数排序"
-```
-
-### 获取论文详情
-
-```python
 "获取这篇论文的详细信息: 10.1038/nature14539"
-```
-
-### 查看论文引用
-
-```python
 "查看引用 Attention Is All You Need 这篇论文的文献"
 ```
 
@@ -115,27 +89,21 @@ pip install -e .
 ### 运行测试
 
 ```bash
-# 测试 OpenAlex
-uv run python -c "
-import asyncio
-from src.mcp_scholar.openalex import OpenAlexClient
+# 运行所有测试
+uv run pytest -v
 
-async def test():
-    client = OpenAlexClient()
-    result = await client.search_papers('machine learning', max_results=3)
-    for paper in result.papers:
-        print(f'{paper.title} ({paper.year}) - {paper.citations} citations')
-    await client.close()
-
-asyncio.run(test())
-"
+# 运行特定测试
+uv run pytest tests/test_api.py::TestOpenAlexAPI::test_search_basic -v
 ```
 
-### 直接运行服务器
+### 测试覆盖
 
-```bash
-uv run mcp-scholar
-```
+项目包含 9 个单元测试：
+- 基本搜索功能
+- 年份过滤（from/to/both）
+- 排序功能
+- 论文详情获取
+- 引用分析
 
 ## 项目结构
 

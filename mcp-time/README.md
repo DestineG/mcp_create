@@ -7,6 +7,7 @@
 - 🌍 **获取当前时间**: 支持任意时区
 - 🔄 **时区转换**: 在不同时区之间转换时间
 - 📋 **时区列表**: 查看所有可用时区
+- ✅ **完整测试**: 包含 11 个单元测试，覆盖所有功能和边界情况
 
 ## 安装
 
@@ -60,24 +61,41 @@ uv tool install .
 
 ## 配置
 
-在 Claude Desktop 配置中添加：
+### Claude CLI (推荐)
 
-```json
-{
-  "mcpServers": {
-    "time": {
-      "command": "mcp-time"
-    }
-  }
-}
+```bash
+claude mcp add time mcp-time
 ```
 
 ## 使用示例
 
-在 Claude Desktop 中：
-- "现在北京时间几点？"
-- "把纽约时间 2024-01-01 12:00 转换成上海时间"
-- "列出所有亚洲的时区"
+在 Claude CLI 中使用自然语言：
+
+```
+"现在北京时间几点？"
+"把纽约时间 2024-01-01 12:00 转换成上海时间"
+"列出所有亚洲的时区"
+```
+
+## 开发
+
+### 运行测试
+
+```bash
+# 运行所有测试
+uv run pytest -v
+
+# 运行特定测试
+uv run pytest tests/test_time.py::TestTimeTools::test_convert_timezone -v
+```
+
+### 测试覆盖
+
+项目包含 11 个单元测试：
+- 时区操作（UTC、北京、时区转换）
+- 时区列表和过滤
+- 格式化（ISO、Unix、人类可读）
+- 边界情况（无效时区、大小写敏感、夏令时）
 
 ## 许可证
 

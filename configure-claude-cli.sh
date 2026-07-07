@@ -20,7 +20,21 @@ echo -e "${BLUE}配置路径:${NC}"
 echo "  使用 claude mcp add 命令（自动选择合适的配置文件）"
 echo ""
 
-# 获取已安装的 MCP 工具列表
+# 检查已配置的 MCP 服务器
+echo -e "${BLUE}检查 Claude CLI 中已配置的 MCP 服务器...${NC}"
+echo ""
+
+# 显示当前 MCP 配置
+if claude mcp list 2>/dev/null | grep -q "Connected"; then
+    echo -e "${GREEN}已配置的 MCP 服务器:${NC}"
+    claude mcp list
+    echo ""
+    echo -e "${YELLOW}提示: 以上 MCP 服务器已经配置完成${NC}"
+    echo ""
+    exit 0
+fi
+
+# 获取已安装但未配置的 MCP 工具列表
 echo -e "${BLUE}扫描已安装的 MCP 服务器...${NC}"
 MCP_TOOLS=$(uv tool list 2>/dev/null | grep -E "^mcp-" | awk '{print $1}' || echo "")
 

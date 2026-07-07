@@ -9,22 +9,29 @@
 git clone https://github.com/DestineG/mcp_create.git
 cd mcp_create
 
-# 2. 一键安装所有 MCP
+# 2. 一键安装所有 MCP（自动运行测试）
 chmod +x install-all.sh
 ./install-all.sh
 
-# 3. 验证
+# 3. 配置到 Claude CLI
+chmod +x configure-claude-cli.sh
+./configure-claude-cli.sh
+
+# 4. 验证
 uv tool list
+claude mcp list
 ```
 
 就这么简单！✨
 
+> **注意**: `install-all.sh` 会在安装前自动运行每个项目的测试套件，确保代码质量。
+
 ## 📦 包含的 MCP 服务器
 
-| 项目 | 描述 | 工具数 | 文档 |
-|------|------|--------|------|
-| **mcp-scholar** | 学术论文搜索（OpenAlex + Semantic Scholar） | 3 | [详细说明](#mcp-scholar-使用) |
-| **mcp-time** | 时区和时间工具 | 3 | [详细说明](#mcp-time-使用) |
+| 项目 | 描述 | 工具数 | 测试数 | 文档 |
+|------|------|--------|--------|------|
+| **mcp-scholar** | 学术论文搜索（OpenAlex + Semantic Scholar） | 3 | 9 | [详细说明](#mcp-scholar-使用) |
+| **mcp-time** | 时区和时间工具 | 3 | 11 | [详细说明](#mcp-time-使用) |
 
 ### mcp-scholar 使用
 
@@ -125,22 +132,30 @@ Claude: [自动调用 get_current_time 工具]
 ```bash
 cd mcp_create
 
-# 1. 创建新项目
+# 1. 创建新项目（参考开发规范）
 mkdir mcp-weather
 cd mcp-weather
-# ... 开发代码，确保包含 pyproject.toml ...
+# ... 开发代码，确保包含 pyproject.toml 和 tests/ ...
 
-# 2. 本地测试
+# 2. 编写测试
+mkdir tests
+# ... 编写单元测试 ...
+
+# 3. 本地测试和安装
 cd ..
-./install-all.sh  # 自动发现并安装新项目
+./install-all.sh  # 自动运行测试并安装
 
-# 3. 提交
+# 4. 提交
 git add .
 git commit -m "Add mcp-weather"
 git push
 ```
 
 **自动发现**：脚本会扫描所有包含 `pyproject.toml` 的子目录，无需配置！
+
+**自动测试**：安装前自动运行 `pytest`，测试失败则跳过安装。
+
+**开发规范**：参考 [MCP_DEVELOPMENT_GUIDE.md](./MCP_DEVELOPMENT_GUIDE.md) 了解项目结构、测试要求和最佳实践。
 
 ### 修改现有项目
 
@@ -149,14 +164,22 @@ git push
 cd mcp-scholar
 # ... 修改 ...
 
-# 2. 测试
-cd ..
-./install-all.sh  # 重新安装
+# 2. 运行测试
+uv run pytest -v
 
-# 3. 提交
+# 3. 重新安装
+cd ..
+./install-all.sh  # 自动运行测试并重新安装
+
+# 4. 提交
 git add .
 git commit -m "Update mcp-scholar"
 git push
+```
+
+**跳过测试**（不推荐）：
+```bash
+RUN_TESTS=false ./install-all.sh
 ```
 
 ### 其他机器同步更新
@@ -174,40 +197,31 @@ chmod +x configure-claude-cli.sh
 ./configure-claude-cli.sh
 ```
 
-配置会立即生效，无需重启！
-
-### 手动配置（可选）
-
-编辑 `~/.claude/settings.json`，添加：
-
-```json
-{
-  "mcpServers": {
-    "scholar": {
-      "command": "mcp-scholar"
-    },
-    "time": {
-      "command": "mcp-time"
-    }
-  }
-}
-```
+配置会立即生效，无需重启！脚本会：
+- 自动检测通过 `uv tool list` 安装的所有 MCP
+- 使用 `claude mcp add` 命令配置每个 MCP
+- 验证连接状态（显示 ✓ Connected）
 
 ## 📁 项目结构
 
 ```
 mcp_create/
-├── README.md                 # 本文件
-├── install-all.sh            # 批量安装脚本
-├── configure-claude-cli.sh   # 自动配置 Claude CLI
+├── README.md                      # 本文件
+├── MCP_DEVELOPMENT_GUIDE.md       # 开发规范和模板
+├── install-all.sh                 # 批量安装脚本（自动测试）
+├── configure-claude-cli.sh        # 自动配置 Claude CLI
 ├── .gitignore
-├── mcp-scholar/              # 学术论文搜索
+├── mcp-scholar/                   # 学术论文搜索
 │   ├── src/mcp_scholar/
+│   ├── tests/                     # 9 个单元测试
 │   ├── pyproject.toml
+│   ├── pytest.ini
 │   └── README.md
-└── mcp-time/                 # 时区工具
+└── mcp-time/                      # 时区工具
     ├── src/mcp_time/
+    ├── tests/                     # 11 个单元测试
     ├── pyproject.toml
+    ├── pytest.ini
     └── README.md
 ```
 
@@ -219,12 +233,21 @@ A: 是的。运行 `./install-all.sh` 使修改生效。
 **Q: 可以只安装某个项目吗？**  
 A: 可以。`uv tool install ./mcp-scholar`
 
+**Q: 如何跳过测试安装？**  
+A: `RUN_TESTS=false ./install-all.sh`（不推荐，可能安装有问题的代码）
+
+**Q: 如何单独运行某个项目的测试？**  
+A: `cd mcp-scholar && uv run pytest -v`
+
 **Q: 如何卸载？**  
 A: 单个卸载：`uv tool uninstall mcp-scholar`  
    全部卸载：`uv tool list | grep -E "^mcp-" | awk '{print $1}' | xargs -I {} uv tool uninstall {}`
 
 **Q: 为什么用源码安装而不是 wheel 文件？**  
 A: 源码安装更简单：Git 仓库更小，修改后直接 `git pull` 即可，所有机器环境一致。
+
+**Q: 如何确保代码质量？**  
+A: 每个项目都包含完整的单元测试套件，`install-all.sh` 会在安装前自动运行测试。
 
 ## 💡 小技巧
 
@@ -243,8 +266,10 @@ mcp-sync  # 一键同步并安装
 
 1. 每台机器需要先安装 uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 2. 修改代码后必须运行 `./install-all.sh` 才能生效
-3. Claude Desktop 需要重启才能识别新安装的 MCP
+3. Claude CLI 无需重启，配置立即生效
 4. 不要提交构建文件（已在 .gitignore 中配置）
+5. 添加新 MCP 时请遵循 [MCP_DEVELOPMENT_GUIDE.md](./MCP_DEVELOPMENT_GUIDE.md) 规范
+6. 确保每个项目包含测试套件（tests/ 目录）
 
 ## 🎯 核心优势
 
@@ -253,6 +278,9 @@ mcp-sync  # 一键同步并安装
 - ✅ 一键安装所有 MCP 服务器
 - ✅ 自动发现新项目，无需配置
 - ✅ 源码分发，环境一致
+- ✅ 自动测试，确保代码质量
+- ✅ 完整的开发规范和模板
+- ✅ 20 个单元测试覆盖核心功能
 
 ## 📄 许可证
 

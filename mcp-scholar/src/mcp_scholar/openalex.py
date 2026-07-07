@@ -29,14 +29,13 @@ class OpenAlexClient:
         if self.email:
             params["mailto"] = self.email
 
-        filters = []
-        if year_from:
-            filters.append(f"publication_year:>={year_from}")
-        if year_to:
-            filters.append(f"publication_year:<={year_to}")
-
-        if filters:
-            params["filter"] = ",".join(filters)
+        # 年份过滤：使用 OpenAlex 的范围格式
+        if year_from and year_to:
+            params["filter"] = f"publication_year:{year_from}-{year_to}"
+        elif year_from:
+            params["filter"] = f"publication_year:{year_from}-{year_from + 10}"  # 默认10年范围
+        elif year_to:
+            params["filter"] = f"publication_year:{year_to - 10}-{year_to}"  # 默认10年范围
 
         sort_map = {
             "relevance": "relevance_score:desc",

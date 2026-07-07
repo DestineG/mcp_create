@@ -14,19 +14,11 @@ echo "🔧 Claude CLI MCP 自动配置"
 echo ""
 
 # Claude CLI 配置文件路径
-CLAUDE_DIR="$HOME/.claude"
-CONFIG_FILE="$CLAUDE_DIR/settings.json"
+CONFIG_FILE="$HOME/.claude/settings.json"
 
-echo -e "${BLUE}配置文件路径:${NC}"
-echo "  $CONFIG_FILE"
+echo -e "${BLUE}配置路径:${NC}"
+echo "  使用 claude mcp add 命令（自动选择合适的配置文件）"
 echo ""
-
-# 检查配置目录
-if [ ! -d "$CLAUDE_DIR" ]; then
-    echo -e "${RED}❌ 错误: Claude CLI 配置目录不存在${NC}"
-    echo "请确保已安装 Claude CLI"
-    exit 1
-fi
 
 # 获取已安装的 MCP 工具列表
 echo -e "${BLUE}扫描已安装的 MCP 服务器...${NC}"
@@ -44,114 +36,51 @@ echo "$MCP_TOOLS" | while read tool; do
 done
 echo ""
 
-# 备份现有配置
-if [ -f "$CONFIG_FILE" ]; then
-    BACKUP_FILE="${CONFIG_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
-    cp "$CONFIG_FILE" "$BACKUP_FILE"
-    echo -e "${YELLOW}📦 已备份现有配置到:${NC}"
-    echo "  $BACKUP_FILE"
-    echo ""
-fi
+# 使用 claude mcp add 命令添加 MCP 服务器
+echo -e "${BLUE}添加 MCP 服务器...${NC}"
+echo ""
 
-# 读取现有配置
-if [ -f "$CONFIG_FILE" ]; then
-    EXISTING_CONFIG=$(cat "$CONFIG_FILE")
-else
-    EXISTING_CONFIG="{}"
-fi
+success_count=0
+failed_count=0
 
-# 生成 MCP 配置
-echo -e "${BLUE}生成 MCP 配置...${NC}"
-
-# 使用 Python 来处理 JSON
-python3 - "$CONFIG_FILE" "$MCP_TOOLS" "$EXISTING_CONFIG" << 'PYTHON_SCRIPT'
-import json
-import sys
-import os
-
-config_file = sys.argv[1]
-mcp_tools = sys.argv[2].strip().split('\n')
-existing_config = sys.argv[3]
-
-# 解析现有配置
-try:
-    config = json.loads(existing_config)
-except:
-    config = {}
-
-# 确保 mcpServers 键存在
-if "mcpServers" not in config:
-    config["mcpServers"] = {}
-
-# 为每个 MCP 工具生成配置
-for tool in mcp_tools:
-    if not tool:
+echo "$MCP_TOOLS" | while read tool; do
+    if [ -z "$tool" ]; then
         continue
+    fi
 
-    tool = tool.strip()
-    server_name = tool.replace("mcp-", "")
+    tool=$(echo "$tool" | xargs)
+    server_name=$(echo "$tool" | sed 's/mcp-//')
 
-    # 基本配置
-    server_config = {
-        "command": tool
-    }
+    echo -e "${YELLOW}添加: $server_name ($tool)${NC}"
 
-    # 针对特定 MCP 添加环境变量
-    if tool == "mcp-scholar":
-        env = {}
-        if os.environ.get("OPENALEX_EMAIL"):
-            env["OPENALEX_EMAIL"] = os.environ.get("OPENALEX_EMAIL")
-        if os.environ.get("SEMANTIC_SCHOLAR_API_KEY"):
-            env["SEMANTIC_SCHOLAR_API_KEY"] = os.environ.get("SEMANTIC_SCHOLAR_API_KEY")
-        if env:
-            server_config["env"] = env
+    # 使用 claude mcp add 命令
+    if claude mcp add "$server_name" "$tool" 2>&1 | grep -q "Added"; then
+        echo -e "${GREEN}  ✅ 成功${NC}"
+        success_count=$((success_count + 1))
+    else
+        echo -e "${RED}  ❌ 失败${NC}"
+        failed_count=$((failed_count + 1))
+    fi
+    echo ""
+done
 
-    # 只在不存在时添加（不覆盖用户自定义配置）
-    if server_name not in config["mcpServers"]:
-        config["mcpServers"][server_name] = server_config
-
-# 写入配置文件
-with open(config_file, 'w') as f:
-    json.dump(config, f, indent=2)
-
-print(json.dumps(config, indent=2))
-PYTHON_SCRIPT
-
-echo ""
-echo -e "${GREEN}✅ 配置已写入:${NC}"
-echo "  $CONFIG_FILE"
+# 验证 MCP 服务器状态
+echo -e "${BLUE}验证 MCP 服务器状态...${NC}"
+claude mcp list
 echo ""
 
-# 显示配置内容
-echo -e "${BLUE}当前配置:${NC}"
-cat "$CONFIG_FILE" | python3 -m json.tool
-echo ""
-
-# 环境变量提示
-echo -e "${YELLOW}💡 提示:${NC}"
-echo ""
-echo "某些 MCP 服务器需要环境变量。你可以："
-echo ""
-echo "1. 设置环境变量后重新运行此脚本:"
-echo "   export OPENALEX_EMAIL='your@email.com'"
-echo "   export SEMANTIC_SCHOLAR_API_KEY='your-key'"
-echo "   ./configure-claude-cli.sh"
-echo ""
-echo "2. 或手动编辑配置文件:"
-echo "   nano $CONFIG_FILE"
 echo ""
 
 # 完成提示
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✨ 配置完成！${NC}"
 echo ""
-echo -e "${YELLOW}📝 配置文件已更新，无需重启 Claude CLI${NC}"
-echo ""
-echo "配置的 MCP 服务器:"
-echo "$MCP_TOOLS" | while read tool; do
-    server_name=$(echo $tool | sed 's/mcp-//')
-    echo "  ✅ $server_name ($tool)"
-done
+echo -e "${YELLOW}📝 MCP 服务器已添加并连接成功${NC}"
 echo ""
 echo "你现在可以在 Claude CLI 中使用这些 MCP 服务器了！"
 echo ""
+echo "示例："
+echo "  - 搜索关于机器学习的论文"
+echo "  - 现在北京时间几点？"
+echo ""
+

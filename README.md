@@ -4,24 +4,9 @@
 
 ## 🚀 快速开始
 
-### 首次设置（推送到 GitHub）
-
-```bash
-# 1. 在 GitHub 创建仓库
-# 访问 https://github.com/new
-# 创建名为 "mcp_create" 的仓库（不要初始化 README）
-
-# 2. 推送代码
-git remote add origin https://github.com/你的用户名/mcp_create.git
-git branch -M main
-git push -u origin main
-```
-
-### 在任何机器上使用
-
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/你的用户名/mcp_create.git
+git clone https://github.com/DestineG/mcp_create.git
 cd mcp_create
 
 # 2. 一键安装所有 MCP

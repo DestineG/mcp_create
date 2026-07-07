@@ -9,6 +9,12 @@ dependencies = [
     "python-dateutil>=2.8.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
 [project.scripts]
 mcp-time = "mcp_time.server:run"
 

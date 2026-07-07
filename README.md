@@ -91,9 +91,7 @@ cd mcp_create
 git pull && ./install-all.sh
 ```
 
-## 🔧 配置 Claude
-
-### Claude CLI（推荐）
+## 🔧 配置 Claude CLI
 
 ```bash
 # 一键配置所有已安装的 MCP 到 Claude CLI
@@ -103,25 +101,10 @@ chmod +x configure-claude-cli.sh
 
 配置会立即生效，无需重启！
 
-### Claude Desktop
+### 手动配置（可选）
 
-```bash
-# 一键配置所有已安装的 MCP 到 Claude Desktop
-chmod +x configure-claude.sh
-./configure-claude.sh
-```
+编辑 `~/.claude/settings.json`，添加：
 
-需要重启 Claude Desktop 使配置生效。
-
-### 手动配置
-
-**Claude CLI**: 编辑 `~/.claude/settings.json`  
-**Claude Desktop**: 
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-- Linux: `~/.config/Claude/claude_desktop_config.json`
-
-添加配置：
 ```json
 {
   "mcpServers": {
@@ -141,8 +124,7 @@ chmod +x configure-claude.sh
 mcp_create/
 ├── README.md                 # 本文件
 ├── install-all.sh            # 批量安装脚本
-├── configure-claude-cli.sh   # 配置 Claude CLI
-├── configure-claude.sh       # 配置 Claude Desktop
+├── configure-claude-cli.sh   # 自动配置 Claude CLI
 ├── .gitignore
 ├── mcp-scholar/              # 学术论文搜索
 │   ├── src/mcp_scholar/

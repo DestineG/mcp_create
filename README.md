@@ -93,7 +93,24 @@ git pull && ./install-all.sh
 
 ## 🔧 配置 Claude Desktop
 
-安装完成后，编辑配置文件：
+### 方法 1: 自动配置（推荐）
+
+```bash
+# 一键配置所有已安装的 MCP 到 Claude Desktop
+chmod +x configure-claude.sh
+./configure-claude.sh
+```
+
+脚本会：
+- ✅ 自动检测操作系统和配置文件路径
+- ✅ 扫描所有已安装的 MCP 服务器
+- ✅ 备份现有配置
+- ✅ 自动生成并写入配置
+- ✅ 不覆盖已有的自定义配置
+
+### 方法 2: 手动配置
+
+编辑配置文件：
 
 **配置文件位置**:
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
@@ -116,6 +133,8 @@ git pull && ./install-all.sh
   }
 }
 ```
+
+### 完成
 
 重启 Claude Desktop 即可使用。
 
